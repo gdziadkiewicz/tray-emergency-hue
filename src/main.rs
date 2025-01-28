@@ -7,7 +7,29 @@ enum Message {
     Red,
 }
 
-fn main() {
+fn setup_logger() -> Result<(), Box<dyn std::error::Error>> {
+    use log::LevelFilter;
+    use simplelog::{ColorChoice, CombinedLogger, Config, TermLogger, TerminalMode, WriteLogger};
+    use std::fs::File;
+
+    CombinedLogger::init(vec![
+        TermLogger::new(
+            LevelFilter::Debug,
+            Config::default(),
+            TerminalMode::Mixed,
+            ColorChoice::Auto,
+        ),
+        WriteLogger::new(
+            LevelFilter::Debug,
+            Config::default(),
+            File::create("my_rust_binary.log")?,
+        ),
+    ])?;
+    Ok(())
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    setup_logger()?;
     let mut tray = TrayItem::new(
         "Tray Example",
         IconSource::Resource("name-of-icon-in-rc-file"),
@@ -17,7 +39,7 @@ fn main() {
     tray.add_label("Tray Label").unwrap();
 
     tray.add_menu_item("Hello", || {
-        println!("Hello!");
+        log::info!("Hello!");
     })
     .unwrap();
 
@@ -28,40 +50,44 @@ fn main() {
     let red_tx = tx.clone();
     tray.add_menu_item("Red", move || {
         red_tx.send(Message::Red).unwrap();
-    })
-    .unwrap();
+    })?;
 
     let green_tx = tx.clone();
     tray.add_menu_item("Green", move || {
         green_tx.send(Message::Green).unwrap();
-    })
-    .unwrap();
+    })?;
 
-    tray.inner_mut().add_separator().unwrap();
+    tray.inner_mut().add_separator()?;
 
     let quit_tx = tx.clone();
     tray.add_menu_item("Quit", move || {
         quit_tx.send(Message::Quit).unwrap();
-    })
-    .unwrap();
+    })?;
 
     loop {
         match rx.recv() {
             Ok(Message::Quit) => {
-                println!("Quit");
+                log::info!("Quit");
                 break;
             }
             Ok(Message::Red) => {
-                println!("Red");
-                tray.set_icon(IconSource::Resource("another-name-from-rc-file"))
-                    .unwrap();
+                log::info!("Red");
+                use notify_rust::Notification;
+                Notification::new()
+                    .appname("Piesek")
+                    //.sound_name(name)
+                    .summary("ALARM!")
+                    .body("Paulina Cię wzywa!!!")
+                    //.icon("D:\\repos\\tray\\tray-emergency-hue\\icons\\icon-red.ico")
+                    .show()?;
+                tray.set_icon(IconSource::Resource("another-name-from-rc-file"))?
             }
             Ok(Message::Green) => {
-                println!("Green");
-                tray.set_icon(IconSource::Resource("name-of-icon-in-rc-file"))
-                    .unwrap()
+                log::info!("Green");
+                tray.set_icon(IconSource::Resource("name-of-icon-in-rc-file"))?
             }
             _ => {}
         }
     }
+    Ok(())
 }

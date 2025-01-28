@@ -1,5 +1,6 @@
-extern crate embed_resource;
+use embed_resource::compile;
 
-fn main() {
-    embed_resource::compile("a.rc", embed_resource::NONE);
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    compile("resources.rc", embed_resource::NONE).manifest_required()?;
+    Ok(())
 }
