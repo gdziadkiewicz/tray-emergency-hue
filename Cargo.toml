@@ -2,11 +2,16 @@
 name = "tray-emergency-hue"
 version = "0.1.0"
 edition = "2021"
+authors = ["gdziadkiewicz <grzegorz@dziadkiewicz.com>"]
 
 [dependencies]
+config = "0.15.6"
+hues = { git = "https://github.com/gdziadkiewicz/hues", version = "0.1.2", features = ["all", "sse", "streaming"] }
 log = "0.4.25"
 notify-rust = "4.11.4"
+serde = { version = "1.0.217", features = ["derive"] }
 simplelog = "0.12.2"
+tokio = "1.43.0"
 tray-item = "0.10.0"
 
 [build-dependencies]
