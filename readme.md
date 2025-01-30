@@ -22,3 +22,7 @@ To configure the application, you need to set up the following environment varia
 3. Run the application.
 
 Enjoy your new alert system!
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
