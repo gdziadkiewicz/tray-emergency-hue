@@ -6,7 +6,7 @@ authors = ["gdziadkiewicz <grzegorz@dziadkiewicz.com>"]
 
 [dependencies]
 config = "0.15.6"
-hues = { git = "https://github.com/gdziadkiewicz/hues", version = "0.1.2", features = ["all", "sse", "streaming"] }
+hues = { version = "0.1.3", features = ["sse"] }
 log = "0.4.25"
 notify-rust = "4.11.4"
 serde = { version = "1.0.217", features = ["derive"] }
